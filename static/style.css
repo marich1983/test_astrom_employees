@@ -1,0 +1,203 @@
+        body{
+            font-family: Arial, sans-serif;
+            width:900px;
+            margin:30px auto;
+            background:#f5f5f5;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            border:1px solid #ccc;
+            border-radius:8px;
+        }
+
+        h1,h2{
+            text-align:center;
+        }
+
+        button{
+            margin-bottom:15px;
+            padding:10px 20px;
+            cursor:pointer;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th,td{
+            border:1px solid #ccc;
+            padding:8px;
+            text-align:center;
+        }
+
+        th{
+            background:#efefef;
+        }
+
+
+        form {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 3px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+
+        }
+
+        .search-row input {
+            flex: 1;
+            min-width: 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .search-row button {
+            padding: 10px 20px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .gender-filter {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .gender-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .gender-filter label {
+            display: block;   /* 👈 делает вертикально */
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .age-filter {
+            margin: 10px 0 15px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column; /* 👈 главное изменение */
+            gap: 8px;
+        }
+
+        .age-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .age-filter input {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .add-link {
+            text-decoration: none;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .add-link:hover {
+            background: #45a049;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(3);
+            z-index: 10;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+
+        .male {
+            color: #4db8ff;
+            padding: 4px 8px;
+        }
+
+        .female {
+            color: #ff4fa3;
+            padding: 4px 8px;
+        }
+
+        .req {
+            color: red;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+

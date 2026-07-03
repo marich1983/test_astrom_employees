@@ -1,0 +1,26 @@
+[project]
+name = "testastrom"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Marina.Zakharina",email = "machm@mail.ru"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi (>=0.138.2,<0.139.0)",
+    "uvicorn (>=0.49.0,<0.50.0)",
+    "psycopg[binary] (>=3.3.4,<4.0.0)",
+    "sqlalchemy (>=2.0.51,<3.0.0)",
+    "alembic (>=1.18.5,<2.0.0)",
+    "python-dotenv (>=1.2.2,<2.0.0)",
+    "jinja2 (>=3.1.6,<4.0.0)",
+    "python-multipart (>=0.0.32,<0.0.33)"
+]
+
+[tool.poetry]
+packages = [{include = "testastrom", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

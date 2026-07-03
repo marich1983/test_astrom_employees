@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Добавление сотрудника</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Создание сотрудника</h2>
+
+    <form id="employeeForm">
+
+        <label>Фамилия <span class="req">*</span></label>
+        <input id="last_name" required placeholder="Обязательное поле">
+
+        <label>Имя<span class="req">*</span></label>
+        <input id="first_name" required placeholder="Обязательное поле">
+
+        <label>Отчество</label>
+        <input id="middle_name">
+
+        <label>Телефон</label>
+        <input id="phone">
+
+        <label>Дата рождения<span class="req">*</span></label>
+        <input type="date" id="birth_date" required >
+
+        <label>Пол<span class="req">*</span></label>
+        <select id="gender">
+            <option value="">Выберите пол</option>
+            <option value="male">Муж</option>
+            <option value="female">Жен</option>
+        </select>
+
+        <label>Фото</label>
+        <input type="file" id="photo">
+
+        <button type="submit">Сохранить</button>
+        <button type="button" id="cancelBtn">Отмена</button>
+
+
+    </form>
+
+
+    <div id="message"></div>
+    <div class="form-note">
+    <span class="req">*</span> - обязательное поле
+    </div>
+
+</div>
+
+<script>
+
+const API_URL = window.location.origin;
+
+const pathParts = window.location.pathname.split("/");
+
+const isEdit = pathParts[1] === "edit-employee";
+const employeeId = isEdit ? pathParts[2] : null;
+
+const getValue = (id) => {
+    const el = document.getElementById(id);
+    return el && el.value ? el.value : null;
+};
+
+window.addEventListener("DOMContentLoaded", async () => {
+
+    if (isEdit) {
+        const res = await fetch(`${API_URL}/employees/${employeeId}`);
+        const data = await res.json();
+        const birth = data.birthday;
+
+        document.getElementById("first_name").value = data.first_name;
+        document.getElementById("last_name").value = data.last_name;
+        document.getElementById("middle_name").value = data.middle_name ?? "";
+        document.getElementById("phone").value = data.phone ?? "";
+        document.getElementById("birth_date").value = data.birthday ? data.birthday.slice(0, 10) : "";
+<!--        document.getElementById("birth_date").value = data.birthday ?? "";-->
+        document.getElementById("gender").value = data.gender;
+    }
+
+    document.querySelector("h2").textContent = isEdit
+        ? "Редактирование сотрудника"
+        : "Создание сотрудника";
+});
+
+
+document.getElementById("employeeForm").addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append("last_name", getValue("last_name"));
+    formData.append("first_name", getValue("first_name"));
+
+    if (getValue("middle_name"))
+        formData.append("middle_name", getValue("middle_name"));
+
+    if (getValue("phone"))
+        formData.append("phone", getValue("phone"));
+
+    if (getValue("birth_date"))
+        formData.append("birthday", getValue("birth_date"));
+
+    formData.append("gender", getValue("gender"));
+
+    const photo = document.getElementById("photo").files[0];
+    if (photo) {
+        formData.append("photo", photo);
+    }
+
+    console.log("ABOUT TO SEND FORM DATA");
+
+    const message = document.getElementById("message");
+
+    try {
+
+        const url = isEdit
+            ? `${API_URL}/employees/${employeeId}`
+            : `${API_URL}/employees`;
+
+        const method = isEdit ? "PUT" : "POST";
+
+        const response = await fetch(url, {
+            method: method,
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.log(error);
+
+            message.className = "error";
+            message.textContent = JSON.stringify(error.detail);
+
+            return;
+        }
+
+        const result = await response.json();
+
+        message.className = "success";
+        message.textContent = isEdit
+                ? `Сотрудник обновлён. ID=${result.id}`
+                : `Сотрудник создан. ID=${result.id}`;
+
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 1000);
+
+    } catch (err) {
+        message.className = "error";
+        message.textContent = err.message;
+    }
+
+});
+
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+    window.location.href = "/";
+});
+
+</script>
+
+</body>
+</html>

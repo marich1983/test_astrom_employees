@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Реестр сотрудников</title>
+
+<link rel="stylesheet" href="static/style.css">
+
+<style>
+.pagination {
+    margin-top: 15px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.pagination button.active-page {
+    background: #333;
+    color: white;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header-row">
+    <h1>Реестр сотрудников</h1>
+    <a href="/create-employee" class="add-link">+ Добавить сотрудника</a>
+</div>
+
+<div class="search-row">
+    <input id="searchInput" type="text" placeholder="Поиск по ФИО или телефону...">
+    <button id="searchBtn">Поиск</button>
+</div>
+
+<div class="gender-filter">
+    <label><input type="checkbox" id="maleCheck"> Мужской</label>
+    <label><input type="checkbox" id="femaleCheck"> Женский</label>
+</div>
+
+<div class="age-filter">
+    <input id="ageFrom" type="number" placeholder="с">
+    <input id="ageTo" type="number" placeholder="по">
+</div>
+
+<div class="card">
+
+    <h2>Список сотрудников</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Фото</th>
+                <th>ФИО</th>
+                <th>Телефон</th>
+                <th>Пол</th>
+                <th>Возраст</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+
+        <tbody id="employeesTable"></tbody>
+    </table>
+
+    <!-- ПАГИНАЦИЯ -->
+    <div id="pagination" class="pagination"></div>
+
+</div>
+
+<script>
+
+const API_URL = window.location.origin;
+
+let limit = 10;
+let page = 1;
+let total = 0;
+
+document.getElementById("searchBtn").addEventListener("click", () => {
+    page = 1;
+    loadEmployees();
+});
+
+document.getElementById("searchInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        page = 1;
+        loadEmployees();
+    }
+});
+
+function getSkip() {
+    return (page - 1) * limit;
+}
+
+async function loadEmployees() {
+
+    const search = document.getElementById("searchInput").value.trim();
+    const male = document.getElementById("maleCheck").checked;
+    const female = document.getElementById("femaleCheck").checked;
+    const ageFrom = document.getElementById("ageFrom").value;
+    const ageTo = document.getElementById("ageTo").value;
+
+    const url = new URL(`${API_URL}/employees`);
+
+    url.searchParams.append("limit", limit);
+    url.searchParams.append("skip", getSkip());
+
+    if (search) url.searchParams.append("search", search);
+    if (male && !female) url.searchParams.append("gender", "male");
+    if (female && !male) url.searchParams.append("gender", "female");
+    if (ageFrom) url.searchParams.append("age_from", ageFrom);
+    if (ageTo) url.searchParams.append("age_to", ageTo);
+
+    const response = await fetch(url);
+    if (!response.ok) return;
+
+    const data = await response.json();
+
+    const list = Array.isArray(data) ? data : data.employees;
+
+    total = list.length < limit ? (page - 1) * limit + list.length : (page * limit + 1);
+
+    renderTable(list);
+    renderPagination();
+}
+
+function renderTable(list) {
+    const tbody = document.getElementById("employeesTable");
+    tbody.innerHTML = "";
+
+    list.forEach(emp => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${emp.id}</td>
+                <td>
+                    ${emp.photo
+                        ? `<img src="/static/photos/${emp.photo}" class="avatar">`
+                        : ""}
+                </td>
+                <td>
+                  ${[emp.last_name, emp.first_name, emp.middle_name]
+                    .filter(Boolean)
+                    .join(" ")}
+                </td>
+                <td>${emp.phone ?? ""}</td>
+                <td class="${emp.gender}">
+                    ${emp.gender_rus || emp.gender}
+                </td>
+                <td>${emp.age ?? ""}</td>
+                <td>
+                    <a href="/edit-employee/${emp.id}">Редакт.</a> |
+                    <a href="#" onclick="deleteEmployee(${emp.id}); return false;">Удал.</a>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function renderPagination() {
+    const pages = Math.ceil(total / limit) || 1;
+
+    let html = "";
+
+    for (let i = 1; i <= pages; i++) {
+        html += `
+            <button
+                onclick="goToPage(${i})"
+                class="${i === page ? 'active-page' : ''}"
+            >
+                ${i}
+            </button>
+        `;
+    }
+
+    document.getElementById("pagination").innerHTML = html;
+}
+
+function goToPage(p) {
+    page = p;
+    loadEmployees();
+}
+
+async function deleteEmployee(id) {
+
+    if (!confirm("Удалить сотрудника?")) {
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/employees/${id}`, {
+        method: "DELETE"
+    });
+
+    if (response.ok) {
+        loadEmployees();
+    } else {
+        alert("Не удалось");
+    }
+}
+
+// первая загрузка
+loadEmployees();
+
+</script>
+
+</body>
+</html>
